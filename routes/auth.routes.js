@@ -1,22 +1,22 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/user.model");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
 
-const { isAuthenticated, isAdmin } = require("./../middleware/jwt.middleware");
+const { isAuthenticated, isAdmin } = require('./../middleware/jwt.middleware');
 
 const saltRounds = 10;
 
 // POST /auth/signup
-router.post("/auth/signup", async (req, res, next) => {
+router.post('/auth/signup', async (req, res, next) => {
   try {
     // Get the data from req.body
     const { email, password, name } = req.body;
 
     // Validate that values are not empty strings
-    if (email === "" || password === "" || name === "") {
-      res.status(400).json({ message: "Provide email, password and name." });
+    if (email === '' || password === '' || name === '') {
+      res.status(400).json({ message: 'Provide email, password and name.' });
       return;
     }
 
@@ -24,7 +24,7 @@ router.post("/auth/signup", async (req, res, next) => {
     // Use regex to validate the email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (!emailRegex.test(email)) {
-      res.status(400).json({ message: "Provide a valid email address." });
+      res.status(400).json({ message: 'Provide a valid email address.' });
       return;
     }
 
@@ -33,7 +33,7 @@ router.post("/auth/signup", async (req, res, next) => {
     if (!passwordRegex.test(password)) {
       res.status(400).json({
         message:
-          "Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
+          'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.',
       });
       return;
     }
@@ -42,7 +42,7 @@ router.post("/auth/signup", async (req, res, next) => {
     const foundUser = await User.findOne({ email });
 
     if (foundUser) {
-      res.status(400).json({ message: "Provide a valid email" });
+      res.status(400).json({ message: 'Provide a valid email' });
       return;
     }
 
@@ -72,14 +72,14 @@ router.post("/auth/signup", async (req, res, next) => {
 });
 
 // POST /auth/login
-router.post("/auth/login", async (req, res, next) => {
+router.post('/auth/login', async (req, res, next) => {
   try {
     // Get values from req.body
     const { email, password } = req.body;
 
     // Validate that values are not empty strings
-    if (email === "" || password === "") {
-      res.status(400).json({ message: "Provide email and password" });
+    if (email === '' || password === '') {
+      res.status(400).json({ message: 'Provide email and password' });
       return;
     }
 
@@ -87,7 +87,7 @@ router.post("/auth/login", async (req, res, next) => {
     const foundUser = await User.findOne({ email: email });
 
     if (!foundUser) {
-      res.status(400).json({ message: "Provide a valid email" });
+      res.status(400).json({ message: 'Provide a valid email' });
       return;
     }
 
@@ -100,21 +100,20 @@ router.post("/auth/login", async (req, res, next) => {
         _id: foundUser._id,
         email: foundUser.email,
         name: foundUser.name,
-        role: foundUser.role, // 'admin' or 'user'
-        image: foundUser.image, 
+        image: foundUser.image,
       };
 
       // Create a JWT with the payload
       // jwt.sign(payload, secretKey, options)
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-        algorithm: "HS256",
-        expiresIn: "12h",
+        algorithm: 'HS256',
+        expiresIn: '12h',
       });
 
       // Send the response
       res.status(200).json({ authToken: authToken });
     } else if (!passwordCorrect) {
-      res.status(401).json({ message: "Unable to login the user" }); // Unathorized
+      res.status(401).json({ message: 'Unable to login the user' }); // Unathorized
     }
   } catch (error) {
     next(error);
@@ -122,7 +121,7 @@ router.post("/auth/login", async (req, res, next) => {
 });
 
 // GET /auth/verify  - Verify tokens stored in the frontend
-router.get("/auth/verify", isAuthenticated, async (req, res, next) => {
+router.get('/auth/verify', isAuthenticated, async (req, res, next) => {
   try {
     // If JWT is valid the payload gets decoded by isAuthenticated middleware
     // and made available on req.payload
@@ -134,5 +133,6 @@ router.get("/auth/verify", isAuthenticated, async (req, res, next) => {
     next(error);
   }
 });
+
 
 module.exports = router;
