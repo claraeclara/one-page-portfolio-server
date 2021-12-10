@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Portfolio = require('../models/portfolio.model');
 const { isAuthenticated } = require('./../middleware/jwt.middleware');
+const User = require('../models/user.model');
+
+// GET /api/portfolios - Gets a list of portfolios from the same user
+// router.get('/api/portfolios', async (req, res, next) => {
+//   try {
+//     const usersPortfolios = await Portfolio.find()
+//     res.status(200).json(usersPortfolios)
+//   } catch (error) {
+
+//   }
+// })
 
 // POST /api/portfolios - Create a new portfolio for an existing user
 router.post('/api/portfolios', async (req, res, next) => {
@@ -44,6 +55,11 @@ router.post('/api/portfolios', async (req, res, next) => {
       userId,
     });
     res.status(201).json(createdPortfolio);
+
+    // Update the user to which the portfolio belongs
+    await User.findByIdAndUpdate(userId, {
+      $push: { portfolios: createdPortfolio._id },
+    });
   } catch (error) {
     res.status(500).json(error);
   }

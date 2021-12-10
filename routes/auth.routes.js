@@ -40,7 +40,7 @@ router.post('/auth/signup', async (req, res, next) => {
     }
 
     // Check if email is not taken
-    const foundUser = await User.findOne({ email });
+    const foundUser = await User.findOne({ email }).populate('portfolios');
 
     if (foundUser) {
       res.status(400).json({ message: 'Provide a valid email' });
@@ -57,6 +57,7 @@ router.post('/auth/signup', async (req, res, next) => {
       password: hashedPassword,
       name,
       image,
+      portfolios,
     });
 
     // We should never expose passwords publicly
@@ -64,6 +65,8 @@ router.post('/auth/signup', async (req, res, next) => {
       _id: createdUser._id,
       email: createdUser.email,
       name: createdUser.name,
+      image: createdUser.image,
+      portfolios: createdUser.portfolios,
     };
 
     // Send the response back
@@ -103,6 +106,7 @@ router.post('/auth/login', async (req, res, next) => {
         email: foundUser.email,
         name: foundUser.name,
         image: foundUser.image,
+        portfolios: foundUser.portfolios,
       };
 
       // Create a JWT with the payload

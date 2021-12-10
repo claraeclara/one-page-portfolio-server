@@ -10,7 +10,7 @@ router.get('/api/users/current', isAuthenticated, async (req, res, next) => {
     // req.payload holds the user info that was encoded in JWT during login.
 
     const currentUser = req.payload;
-    const user = await User.findById(currentUser._id);
+    const user = await User.findById(currentUser._id).populate('portfolios');
 
     res.status(200).json(user);
   } catch (error) {
