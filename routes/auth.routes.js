@@ -12,7 +12,7 @@ const saltRounds = 10;
 router.post('/auth/signup', async (req, res, next) => {
   try {
     // Get the data from req.body
-    const { email, password, name, image } = req.body;
+    const { email, password, name, image, portfolios } = req.body;
     console.log(req.body);
 
     // Validate that values are not empty strings
