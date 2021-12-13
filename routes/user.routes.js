@@ -19,18 +19,18 @@ router.get('/api/users/current', isAuthenticated, async (req, res, next) => {
   }
 });
 
-// PUT /api/users/current  - Update the current user
 router.put('/api/users/current', isAuthenticated, async (req, res, next) => {
   try {
     // If the user is authenticated we can access the JWT payload via req.payload
     // req.payload holds the user info that was encoded in JWT during login.
 
     const currentUser = req.payload;
+
     const { name, image } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       currentUser._id,
-      { name, image },
+      { name: name, image: image },
       { new: true }
     );
 

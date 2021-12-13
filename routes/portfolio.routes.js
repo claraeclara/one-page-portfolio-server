@@ -15,7 +15,7 @@ const User = require('../models/user.model');
 // })
 
 // POST /api/portfolios - Create a new portfolio for an existing user
-router.post('/api/portfolios', async (req, res, next) => {
+router.post('/api/portfolios', isAuthenticated, async (req, res, next) => {
   try {
     // Get the data from the request body
     const {
@@ -54,60 +54,48 @@ router.post('/api/portfolios', async (req, res, next) => {
       imageThree,
       userId,
     });
-    res.status(201).json(createdPortfolio);
 
     // Update the user to which the portfolio belongs
     await User.findByIdAndUpdate(userId, {
-      $push: { portfolios: createdPortfolio._id },
+      $push: { portfolios: createdPortfolio },
     });
+    res.status(201).json(createdPortfolio);
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 // GET /api/portfolios/:portfolioId - Gets a specific portfolio
-router.get('/api/portfolios/:portfolioId', async (req, res, next) => {
-  try {
-    //Get the portfiolio id from the URL
-    const { portfolioId } = req.params;
+router.get(
+  '/api/portfolios/:portfolioId',
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      //Get the portfiolio id from the URL
+      const { portfolioId } = req.params;
 
-    //Make a DB query
-    const onePortfolio = await Portfolio.findById(portfolioId);
+      //Make a DB query
+      const onePortfolio = await Portfolio.findById(portfolioId);
 
-    //Send the response
-    res.status(200).json(onePortfolio);
-  } catch (error) {
-    res.status(500).json(error);
+      //Send the response
+      res.status(200).json(onePortfolio);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
-});
+);
 
 // PUT /api/portfolios/:portfolioId - Updates a specifc portfolio
-router.put('/api/portfolios/:portfolioId', async (req, res, next) => {
-  try {
-    //Get the portfolio id
-    const { portfolioId } = req.params;
+router.put(
+  '/api/portfolios/:portfolioId',
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      //Get the portfolio id
+      const { portfolioId } = req.params;
 
-    //Values to use for update the portfolio
-    const {
-      name,
-      email,
-      phone,
-      website,
-      template,
-      titleOne,
-      descriptionOne,
-      imageOne,
-      titleTwo,
-      descriptionTwo,
-      imageTwo,
-      titleThree,
-      descriptionThree,
-      imageThree,
-    } = req.body;
-
-    const updatedPortfolio = await Portfolio.findByIdAndUpdate(
-      portfolioId,
-      {
+      //Values to use for update the portfolio
+      const {
         name,
         email,
         phone,
@@ -122,24 +110,50 @@ router.put('/api/portfolios/:portfolioId', async (req, res, next) => {
         titleThree,
         descriptionThree,
         imageThree,
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedPortfolio);
-  } catch (error) {
-    res.status(500).json(error);
+        userId,
+      } = req.body;
+
+      const updatedPortfolio = await Portfolio.findByIdAndUpdate(
+        portfolioId,
+        {
+          name,
+          email,
+          phone,
+          website,
+          template,
+          titleOne,
+          descriptionOne,
+          imageOne,
+          titleTwo,
+          descriptionTwo,
+          imageTwo,
+          titleThree,
+          descriptionThree,
+          imageThree,
+          userId,
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedPortfolio);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
-});
+);
 
 // DELETE /api/portfolios/:portfolioId
-router.delete('/api/portfolios/:portfolioId', async (req, res, next) => {
-  try {
-    const { portfolioId } = req.params;
-    await Portfolio.findByIdAndDelete(portfolioId);
-    res.status(204).send(); // No content
-  } catch (error) {
-    res.status(500).json(error);
+router.delete(
+  '/api/portfolios/:portfolioId',
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { portfolioId } = req.params;
+      await Portfolio.findByIdAndDelete(portfolioId);
+      res.status(204).send(); // No content
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
-});
+);
 
 module.exports = router;
