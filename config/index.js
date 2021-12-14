@@ -27,7 +27,7 @@ module.exports = (app) => {
   app.use(
     cors({
       credentials: true,
-      origin: [REACT_APP],
+      origin: [REACT_APP, "https://one-portfolio-page.netlify.app"],
     })
   );
 
