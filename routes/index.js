@@ -3,6 +3,10 @@ const router = require('express').Router();
 // ********* require fileUploader in order to use it *********
 const fileUploader = require('../config/cloudinary.config');
 
+router.get('/', (req, res, next) => {
+  res.json('All good in here');
+});
+
 // POST "/api/upload" => Route that will receive an image, send it to Cloudinary via the fileUploader and return the image URL
 router.post('/api/upload', fileUploader.single('image'), (req, res, next) => {
   try {

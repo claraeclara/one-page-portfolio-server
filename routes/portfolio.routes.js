@@ -72,6 +72,7 @@ router.get(
   async (req, res, next) => {
     try {
       //Get the portfiolio id from the URL
+
       const { portfolioId } = req.params;
 
       //Make a DB query
