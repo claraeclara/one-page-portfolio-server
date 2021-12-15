@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
 // POST "/api/upload" => Route that will receive an image, send it to Cloudinary via the fileUploader and return the image URL
 router.post('/api/upload', fileUploader.single('image'), (req, res, next) => {
   try {
-    // console.log("file is: ", req.file)
+
     if (!req.file) {
       next(new Error('No file uploaded!'));
       return;
